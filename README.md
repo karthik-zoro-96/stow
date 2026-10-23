@@ -13,6 +13,8 @@ This project is being built for the Hacktoberfest 2026 Week 3 challenge, **Slow 
 
 ## Run locally
 
+This prototype runs on a computer with Node.js, Python, and Ollama installed. The phone is a camera and browser client; the computer stays on to provide the local app, model, and database. It is not yet packaged as a one-click consumer install.
+
 1. Install [Ollama](https://ollama.com/download) and download the model: `ollama pull gemma3:4b`.
 2. Install the API dependencies: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`.
 3. Start the API from the project root: `uvicorn backend.main:app --host 127.0.0.1 --port 8000`.
@@ -34,4 +36,5 @@ Voice recording is a follow-up after the photo-and-search flow works. The first 
 
 - The computer running Ollama must remain on and on the same Wi-Fi as the phone.
 - The Vite dev server is exposed to the local network for this demo. Do not forward its ports to the public internet.
+- Hosting Stow publicly would move notes and photos off the user's computer and change the privacy model. The current prototype is designed for a trusted home network.
 - Gemma's location extraction and search are suggestions. Check the saved location before relying on it.

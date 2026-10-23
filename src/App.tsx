@@ -95,9 +95,9 @@ function App() {
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Stow home"><span className="brand-mark">s</span><span>stow</span></a>
         <div className="topbar-right">
-          <div className={`privacy-label ${connected ? 'is-connected' : ''}`}><LockKey size={13} weight="regular" /><span>{connected ? 'PRIVATE · ON YOUR NETWORK' : 'LOCAL MEMORY'}</span></div>
-          <button className="icon-button help-button" aria-label="About Stow" onClick={() => setMenuOpen(!menuOpen)}><Question size={18} weight="regular" /></button>
-          {menuOpen && <div className="help-popover"><strong>Your home, your memory.</strong><p>Photos and locations go to the Stow service on your own computer. Nothing is sent to a hosted AI service.</p>{connected === false && <p className="setup-tip">Start Ollama and run <code>ollama pull gemma3:4b</code>.</p>}<button onClick={() => setMenuOpen(false)}>Got it</button></div>}
+          <div className={`privacy-label ${connected === true ? 'is-connected' : connected === false ? 'is-offline' : ''}`}><LockKey size={13} weight="regular" /><span>{connected === true ? 'GEMMA READY · LOCAL' : connected === false ? 'LOCAL AI OFFLINE' : 'CONNECTING…'}</span></div>
+          <button className="icon-button help-button" aria-label="About Stow" aria-expanded={menuOpen} aria-controls="stow-help" onClick={() => setMenuOpen(!menuOpen)}><Question size={18} weight="regular" /></button>
+          {menuOpen && <div className="help-popover" id="stow-help"><strong>Your home, your memory.</strong><p>This page runs on your phone. Notes and photos go over your Wi-Fi to Stow on your computer, where Gemma processes them. Nothing is sent to a hosted AI service.</p>{connected === false && <p className="setup-tip">On the computer, start Ollama and run <code>ollama pull gemma3:4b</code>. Start Stow there too.</p>}<button onClick={() => setMenuOpen(false)}>Got it</button></div>}
         </div>
       </header>
 
@@ -120,7 +120,7 @@ function App() {
         <div className="capture-column">
           <div className="section-heading"><span className="section-index">01</span><div><h2>Save a little memory</h2><p>What is it, and where did you put it?</p></div></div>
           <form className="capture-card" onSubmit={remember}>
-            <label className="field-label" htmlFor="memory-note">SAY IT YOUR WAY</label>
+            <label className="field-label" htmlFor="memory-note">YOUR NOTE</label>
             <textarea id="memory-note" value={note} onChange={event => setNote(event.target.value)} placeholder={'“I put the spare charger in the blue desk drawer, under the notebooks.”'} rows={4} />
             <div className="capture-bottom">
               <div className="photo-control">
@@ -130,7 +130,7 @@ function App() {
                 </button>
                 {photo && <button type="button" className="remove-photo" aria-label="Remove photo" onClick={() => setPhoto(null)}><X size={13} weight="regular" /></button>}
               </div>
-              <input ref={fileRef} className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={event => setPhoto(event.target.files?.[0] || null)} />
+              <input ref={fileRef} className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={event => { setPhoto(event.target.files?.[0] || null); event.currentTarget.value = ''; }} />
               <span className="photo-hint">Optional, helps you recognize it</span>
             </div>
             <div className="form-divider" />
