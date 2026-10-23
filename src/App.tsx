@@ -24,12 +24,16 @@ function App() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [connected, setConnected] = useState<boolean | null>(null);
+  const [modelName, setModelName] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void refresh();
-    const check = () => void fetch('/api/health').then(r => r.json()).then(data => setConnected(Boolean(data.ok && data.model_available))).catch(() => setConnected(false));
+    const check = () => void fetch('/api/health').then(r => r.json()).then(data => {
+      setConnected(Boolean(data.ok && data.model_available));
+      if (typeof data.model === 'string') setModelName(data.model);
+    }).catch(() => setConnected(false));
     check();
     const timer = window.setInterval(check, 12000);
     return () => window.clearInterval(timer);
@@ -95,7 +99,7 @@ function App() {
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Stow home"><span className="brand-mark">s</span><span>stow</span></a>
         <div className="topbar-right">
-          <div className={`privacy-label ${connected === true ? 'is-connected' : connected === false ? 'is-offline' : ''}`}><LockKey size={13} weight="regular" /><span>{connected === true ? 'GEMMA READY · LOCAL' : connected === false ? 'LOCAL AI OFFLINE' : 'CONNECTING…'}</span></div>
+          <div className={`privacy-label ${connected === true ? 'is-connected' : connected === false ? 'is-offline' : ''}`}><LockKey size={13} weight="regular" /><span>{connected === true ? `${modelName || 'LOCAL MODEL'} READY · LOCAL`.toUpperCase() : connected === false ? 'LOCAL AI OFFLINE' : 'CONNECTING…'}</span></div>
           <button className="icon-button help-button" aria-label="About Stow" aria-expanded={menuOpen} aria-controls="stow-help" onClick={() => setMenuOpen(!menuOpen)}><Question size={18} weight="regular" /></button>
           {menuOpen && <div className="help-popover" id="stow-help"><strong>Your home, your memory.</strong><p>This page runs on your phone. Notes and photos go over your Wi-Fi to Stow on your computer, where Gemma processes them. Nothing is sent to a hosted AI service.</p>{connected === false && <p className="setup-tip">On the computer, start Ollama and run <code>ollama pull gemma3:4b</code>. Start Stow there too.</p>}<button onClick={() => setMenuOpen(false)}>Got it</button></div>}
         </div>
